@@ -2,13 +2,23 @@ package com.example.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+
+private const val TAG = "MsinActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
+
+    private val quizViewModel : QuizViewModel by lazy {
+        ViewModelProviders.of(this).get(QuizViewModel::class.java)
+    }
 
     private lateinit var trueButton: Button
     private lateinit var falseButton: Button
@@ -19,23 +29,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scoreView: TextView
 
     private var questionTextResId: Int = 0
-    private var answered: Boolean = false
     private var score: Int = 0
 
-    private val questionBank = listOf(
-        Question(R.string.question_africa, false, false),
-        Question(R.string.question_america, true, false),
-        Question(R.string.question_asia, true, false),
-        Question(R.string.question_australia, true, false),
-        Question(R.string.question_mideast, false, false),
-        Question(R.string.question_oceans, true, false)
-    )
-
-    private var currIndex = 0
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState")
+        outState.putInt(KEY_INDEX, quizViewModel.currIndex)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val currIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        quizViewModel.currIndex = currIndex
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -45,45 +52,41 @@ class MainActivity : AppCompatActivity() {
         questionView = findViewById(R.id.question_text_view)
         scoreView = findViewById(R.id.score)
 
-        updateQuestion(0)
+        updateQuestion()
+
         questionView.setOnClickListener { view: View ->
-            updateQuestion(1)
+            updateQuestion()
         }
         trueButton.setOnClickListener { view: View ->
-            if (!questionBank[currIndex].answered) {
-                checkAnswer(true, questionBank[currIndex].answer)
-                questionBank[currIndex].answered = true
+            if (!quizViewModel.currAnswered) {
+                checkAnswer(true, quizViewModel.currAnswer)
+                quizViewModel.updateAnswered(true)
             } else {
                 Toast.makeText(this, R.string.answered, Toast.LENGTH_SHORT).show()
             }
         }
         falseButton.setOnClickListener { view: View ->
-            if (!questionBank[currIndex].answered) {
-                checkAnswer(false, questionBank[currIndex].answer)
-                questionBank[currIndex].answered = true
+            if (!quizViewModel.currAnswered) {
+                checkAnswer(false, quizViewModel.currAnswer)
+                quizViewModel.updateAnswered(true)
             } else {
                 Toast.makeText(this, R.string.answered, Toast.LENGTH_SHORT).show()
             }
         }
         nextButton.setOnClickListener { view: View ->
-            updateQuestion(1)
+            quizViewModel.nextQuestion()
+            updateQuestion()
         }
         backButton.setOnClickListener { view: View ->
-            updateQuestion(-1)
+            quizViewModel.prevQuestion()
+            updateQuestion()
         }
     }
 
-    private fun updateQuestion(increment: Int) {
-        var temp = currIndex + increment
-        if (temp >= questionBank.size || temp < 0) {
-            Toast.makeText(this, R.string.no_more_questions, Toast.LENGTH_SHORT).show()
-        } else {
-            answered = false
-            currIndex = temp
-            questionTextResId = questionBank[currIndex].textResId
-            questionNum.setText(String.format(getString(R.string.num_questions), currIndex+1))
-            questionView.setText(questionTextResId)
-        }
+    private fun updateQuestion() {
+        questionTextResId = quizViewModel.currQuestion
+        questionNum.setText(String.format(getString(R.string.num_questions), quizViewModel.currIndex+1))
+        questionView.setText(questionTextResId)
     }
 
     private fun checkAnswer(clicked: Boolean, answer: Boolean) {
@@ -94,6 +97,6 @@ class MainActivity : AppCompatActivity() {
             R.string.incorrect_toast
         }
         Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
-        scoreView.setText(String.format(getString(R.string.score), score, questionBank.size))
+        scoreView.setText(String.format(getString(R.string.score), score, quizViewModel.getNumQuestions()))
     }
 }
