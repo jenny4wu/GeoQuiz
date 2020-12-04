@@ -8,9 +8,10 @@
         android:id="@+id/question_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|center_horizontal"
+        android:layout_gravity="start|center_horizontal"
         android:paddingTop="18dp"
         android:paddingLeft="18dp"
+        android:paddingRight="18dp"
         android:textFontWeight="3"
         tools:text="Question 1" />
 
@@ -18,8 +19,9 @@
         android:id="@+id/score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|center_horizontal"
+        android:layout_gravity="end|center_horizontal"
         android:paddingTop="18dp"
+        android:paddingLeft="18dp"
         android:paddingRight="18dp"
         android:textFontWeight="3"
         tools:text="Your score: 0/6"/>
@@ -58,7 +60,7 @@
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
+        android:layout_gravity="bottom|start"
         android:gravity="center"
         android:src="@drawable/arrow_left" />
 
@@ -66,7 +68,7 @@
         android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:gravity="center"
         android:text="@string/next_button"
         android:src="@drawable/arrow_right" />

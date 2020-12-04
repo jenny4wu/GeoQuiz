@@ -4,13 +4,10 @@
     <!-- Buttons -->
     <string name="true_button">True</string>
     <string name="false_button">False</string>
-    <string name="next_button">Next</string>
-    <string name="back_button">Back</string>
 
     <!-- Toasts -->
     <string name="correct_toast">Correct!</string>
     <string name="incorrect_toast">Incorrect!</string>
-    <string name="no_more_questions">No more questions!</string>
     <string name="answered">You\'ve already answered!</string>
 
     <!-- Questions -->
