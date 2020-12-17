@@ -4,6 +4,8 @@
     <!-- Buttons -->
     <string name="true_button">True</string>
     <string name="false_button">False</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="cheat_button">Cheat!</string>
 
     <!-- Toasts -->
     <string name="correct_toast">Correct!</string>
@@ -21,5 +23,9 @@
     <!-- Information Text -->
     <string name="num_questions">Question %d</string>
     <string name="score">Your score: %d/%d</string>
+
+    <!-- Cheating Texts -->
+    <string name="warning_text_">Are you sure you want to do this?</string>
+    <string name="judgement_toast">I know what you did.</string>
 
 </resources>
