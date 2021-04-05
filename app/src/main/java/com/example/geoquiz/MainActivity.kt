@@ -1,5 +1,7 @@
 package com.example.geoquiz
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,11 +10,11 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MsinActivity"
 private const val KEY_INDEX = "index"
+private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var trueButton: Button
     private lateinit var falseButton: Button
+    private lateinit var cheatButton: Button
     private lateinit var nextButton: ImageButton
     private lateinit var backButton: ImageButton
     private lateinit var questionNum: TextView
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
+        cheatButton = findViewById(R.id.cheat_button)
         nextButton = findViewById(R.id.next_button)
         backButton = findViewById(R.id.back_button)
         questionNum = findViewById(R.id.question_number)
@@ -73,6 +77,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.answered, Toast.LENGTH_SHORT).show()
             }
         }
+        cheatButton.setOnClickListener { view: View ->
+            val answer = quizViewModel.currAnswer
+            val intent = CheatActivity.newIntent(this@MainActivity, answer)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+        }
         nextButton.setOnClickListener { view: View ->
             quizViewModel.nextQuestion()
             updateQuestion()
@@ -96,7 +105,23 @@ class MainActivity : AppCompatActivity() {
         } else {
             R.string.incorrect_toast
         }
-        Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
+        val finalToastMessage = when {
+            quizViewModel.cheated -> R.string.judgement_toast
+            else -> toastText
+        }
+        Toast.makeText(this, finalToastMessage, Toast.LENGTH_SHORT).show()
         scoreView.setText(String.format(getString(R.string.score), score, quizViewModel.getNumQuestions()))
+    }
+
+    @Override
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            quizViewModel.cheated = data?.getBooleanExtra(CHEATED, false) ?: false
+        }
     }
 }
