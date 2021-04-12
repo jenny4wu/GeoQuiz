@@ -5,11 +5,15 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 
 private const val ANSWER = "com.example.geoquiz.answer"
 const val CHEATED = "com.example.geoquiz.cheated"
+private const val TAG = "CheatActivity"
+private const val DID_CHEAT = "CHEATED"
+private const val ANSWER_TEXT = "ANSWER"
 
 class CheatActivity : AppCompatActivity() {
 
@@ -17,26 +21,45 @@ class CheatActivity : AppCompatActivity() {
     private lateinit var showAnswerButton: Button
 
     private var answer = false
+    private var answerText = "False"
+    private var cheated = false
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState")
+        outState.putBoolean(DID_CHEAT, cheated)
+        outState.putString(ANSWER_TEXT, answerText)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cheat)
 
-        answer = intent.getBooleanExtra(ANSWER, false)
-
         answerView = findViewById(R.id.answer_text_view)
         showAnswerButton = findViewById(R.id.show_answer_button)
+
+        val didCheat = savedInstanceState?.getBoolean(DID_CHEAT, false) ?: false
+        cheated = didCheat
+        if (cheated) {
+            setAnswerShownResult()
+        }
+        val savedAnswer = savedInstanceState?.getString(ANSWER_TEXT, "") ?: ""
+        answerView.text = savedAnswer
+
+        answer = intent.getBooleanExtra(ANSWER, false)
         showAnswerButton.setOnClickListener {
-            val answerText = when {
-                answer -> R.string.true_button
-                else -> R.string.false_button
+            answerText = when {
+                answer -> getString(R.string.true_button)
+                else -> getString(R.string.false_button)
             }
-            answerView.setText(answerText)
-            setAnswerShownResult(true)
+            answerView.text = answerText
+            cheated = true
+            setAnswerShownResult()
         }
     }
 
-    private fun setAnswerShownResult(cheated: Boolean) {
+    private fun setAnswerShownResult() {
         val data = Intent().apply {
             putExtra(CHEATED, cheated)
         }

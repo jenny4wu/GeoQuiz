@@ -20,6 +20,7 @@ class QuizViewModel : ViewModel() {
 
     fun nextQuestion() {
         currIndex = (currIndex  + 1) % questionBank.size
+        cheated = false
     }
 
     fun prevQuestion() {
@@ -41,7 +42,5 @@ class QuizViewModel : ViewModel() {
     val currQuestion: Int get() = questionBank[currIndex].textResId
     val currAnswer: Boolean get() = questionBank[currIndex].answer
     val currAnswered: Boolean get() = questionBank[currIndex].answered
-
-
 
 }
