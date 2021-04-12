@@ -17,6 +17,7 @@ class QuizViewModel : ViewModel() {
 
     var currIndex = 0
     var cheated = false
+    var timesCheated = 0
 
     fun nextQuestion() {
         currIndex = (currIndex  + 1) % questionBank.size

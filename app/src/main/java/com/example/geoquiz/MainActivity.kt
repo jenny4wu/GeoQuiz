@@ -81,15 +81,21 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.answered, Toast.LENGTH_SHORT).show()
             }
         }
+        cheatButton.isClickable = true
         cheatButton.setOnClickListener { view: View ->
-            val answer = quizViewModel.currAnswer
-            val intent = CheatActivity.newIntent(this@MainActivity, answer)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val options =
-                    ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
-                startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+            if (quizViewModel.timesCheated >= 3) {
+                Toast.makeText(this, "You've run out of cheats!", Toast.LENGTH_SHORT).show()
             } else {
-                startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                val answer = quizViewModel.currAnswer
+                val intent =
+                    CheatActivity.newIntent(this@MainActivity, answer, quizViewModel.timesCheated)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val options =
+                        ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+                } else {
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                }
             }
         }
         nextButton.setOnClickListener { view: View ->
@@ -132,6 +138,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (requestCode == REQUEST_CODE_CHEAT) {
             quizViewModel.cheated = data?.getBooleanExtra(CHEATED, false) ?: false
+            quizViewModel.timesCheated = data?.getIntExtra(TIMES_CHEATED, 0) ?: 0
         }
     }
 }
